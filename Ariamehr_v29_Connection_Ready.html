@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#176b87">
+<title>آریامهر فارسی — نسخه ۲۷ آفلاین با حافظهٔ گفتگو، واژه‌ها و آزمون</title>
+<style>
+:root{--bg:#f2f7fa;--panel:#fff;--ink:#173042;--muted:#617786;--brand:#176b87;--brand2:#249c9a;--line:#dbe7ed;--user:#dff5ed;--bot:#edf4f8}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Tahoma,"Noto Sans Arabic",sans-serif;line-height:1.75}
+header{background:linear-gradient(130deg,#145b79,#249c9a);color:#fff;padding:20px 16px 24px;text-align:center}
+header h1{margin:0;font-size:1.7rem}header p{margin:4px 0 0;font-size:.95rem}
+.wrap{max-width:850px;margin:16px auto;padding:0 12px 24px}.status{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.pill{background:#e0f3e9;color:#17633f;border-radius:20px;padding:4px 10px;font-size:.8rem}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px;box-shadow:0 3px 12px #1730420a}
+h2{font-size:1.05rem;margin:0 0 10px}label{display:block;font-size:.9rem;margin:8px 0 4px}
+input,textarea,button{font:inherit}input,textarea{width:100%;padding:11px;border:1px solid #cbdbe3;border-radius:10px;background:#fff;color:var(--ink)}
+button{border:0;border-radius:10px;padding:10px 14px;background:var(--brand);color:#fff;cursor:pointer}
+button.secondary{background:#e7f0f4;color:#173042}button.danger{background:#a93d48}button:active{transform:scale(.99)}
+.chat{height:min(48vh,460px);overflow:auto;display:flex;flex-direction:column;gap:10px;padding:8px 2px}
+.msg{max-width:92%;padding:10px 12px;border-radius:14px;white-space:pre-wrap;overflow-wrap:anywhere}
+.msg.user{align-self:flex-start;background:var(--user);border-bottom-right-radius:4px}
+.msg.bot{align-self:flex-end;background:var(--bot);border-bottom-left-radius:4px}
+.meta{font-size:.72rem;color:var(--muted);margin-bottom:2px}
+.sendrow{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:10px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.small{font-size:.82rem;color:var(--muted)}.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+details summary{cursor:pointer;font-weight:bold}.notice{background:#fff7df;border:1px solid #f1df9c;border-radius:10px;padding:10px;font-size:.85rem}
+footer{text-align:center;color:var(--muted);font-size:.78rem;padding:8px}
+@media(max-width:560px){.two{grid-template-columns:1fr}header h1{font-size:1.45rem}.panel{padding:12px}.chat{height:43vh}}
+</style>
+</head>
+<body>
+<header><h1>🤖 آریامهر</h1><p>نسخهٔ ۲۹ · حافظهٔ گفتگو، آموزش کلمات، اتصال‌پذیر به هوش مصنوعی و اشتراک</p></header>
+<main class="wrap">
+<div class="status"><span class="pill">● بدون اینترنت</span><span class="pill">حافظهٔ محلی مرورگر</span><span class="pill">آموزش سؤال‌وجواب</span></div>
+<section class="panel">
+<h2>گفت‌وگو با آریامهر</h2>
+<div id="chat" class="chat" aria-live="polite"></div>
+<div class="sendrow"><input id="message" placeholder="پیامت را بنویس… مثلاً: اسم من مهراد است" autocomplete="off"><button id="send">ارسال</button></div>
+<div class="actions"><button class="secondary" id="clearChat">پاک‌کردن گفت‌وگو</button><button class="secondary" id="exportData">پشتیبان‌گیری از یادگیری‌ها</button><label class="secondary" style="display:inline-block;padding:8px 12px;border-radius:10px;cursor:pointer">بازیابی پشتیبان<input id="importData" type="file" accept=".json,application/json" hidden></label></div>
+<p class="small">یادآوری: گفتگوها، کلمه‌ها و آموزش‌ها در حافظهٔ همین مرورگر و همین دستگاه ذخیره می‌شوند؛ پاک‌کردن داده‌های مرورگر یا استفاده از مرورگر دیگر ممکن است آن‌ها را حذف کند. برای نگهداری امن‌تر، از «پشتیبان‌گیری» استفاده کن.</p>
+</section>
+<section class="panel">
+<details open><summary>آموزش سؤال و جواب جدید</summary>
+<p class="small">سؤال و جواب را وارد کن تا آریامهر در گفت‌وگوهای بعدی هم از آن استفاده کند.</p>
+<label for="q">سؤال یا عبارت</label><input id="q" placeholder="مثلاً: پایتخت ایران کجاست؟">
+<label for="a">پاسخ آریامهر</label><textarea id="a" rows="3" placeholder="مثلاً: پایتخت ایران تهران است."></textarea>
+<div class="actions"><button id="saveQA">ذخیرهٔ آموزش</button><button class="secondary" id="showQA">نمایش آموزش‌ها</button></div>
+<div id="qaList" class="small"></div>
+</details>
+</section>
+
+<section class="panel" id="wordPanel">
+<details open><summary>یاد دادن کلمه و ذخیرهٔ معنی</summary>
+<p class="small">کلمه و معنی‌اش را وارد کن؛ آریامهر آن را در حافظهٔ همین مرورگر ذخیره می‌کند و بعداً می‌تواند معنی‌اش را بگوید.</p>
+<label for="word">کلمه</label><input id="word" placeholder="مثلاً: دوستی">
+<label for="meaning">معنی کلمه</label><textarea id="meaning" rows="2" placeholder="مثلاً: رابطه‌ای همراه با محبت و اعتماد"></textarea>
+<label for="example">جملهٔ نمونه (اختیاری)</label><input id="example" placeholder="مثلاً: دوستی خوب ارزشمند است.">
+<div class="actions"><button id="saveWord">یاد بگیر و ذخیره کن</button><button class="secondary" id="showWords">نمایش کلمه‌های یادگرفته‌شده</button><button class="secondary" id="quizWord">آزمون کلمه‌ها</button></div>
+<div id="wordList" class="small"></div>
+<div id="quizArea" style="display:none;margin-top:12px;padding:12px;border:1px solid var(--line);border-radius:12px">
+  <p id="quizQuestion" style="font-weight:bold;margin-top:0"></p>
+  <label for="quizAnswer">پاسخ تو</label>
+  <textarea id="quizAnswer" rows="2" placeholder="معنی کلمه را اینجا بنویس…"></textarea>
+  <div class="actions"><button id="checkQuiz">بررسی جواب</button><button id="nextQuiz" class="secondary">سؤال بعدی</button></div>
+  <p id="quizFeedback" class="small" role="status"></p>
+</div>
+</details>
+</section>
+
+<section class="panel">
+<details><summary>حافظه و اطلاعات ذخیره‌شده</summary>
+<p id="memoryInfo" class="small"></p>
+<div class="actions"><button class="secondary" id="forgetName">پاک‌کردن نام ذخیره‌شده</button><button class="danger" id="resetAll">پاک‌کردن همهٔ حافظه و آموزش‌ها</button></div>
+</details>
+</section>
+
+<section class="panel" id="aiConnectionPanel">
+  <h2>اتصال به هوش مصنوعی واقعی</h2>
+  <p>پس از راه‌اندازی سرور امن، نشانی API گفت‌وگو را اینجا وارد کن. کلید API محرمانه را هرگز در این صفحه یا داخل APK نگذار.</p>
+  <label for="aiEndpoint">نشانی API گفت‌وگو (HTTPS)</label>
+  <input id="aiEndpoint" type="url" placeholder="https://your-server.example/api/chat" autocomplete="url">
+  <div class="actions"><button id="saveAiSettings" type="button">ذخیرهٔ تنظیمات اتصال</button><button id="testAiConnection" type="button" class="secondary">آزمون اتصال</button></div>
+  <p id="aiStatus" class="small" role="status">وضعیت: هنوز متصل نیست؛ تا وقتی سرور واقعی تنظیم نشود، پاسخ‌ها آفلاین هستند.</p>
+  <p class="small">سرور باید درخواست JSON شامل message و history را بپذیرد و پاسخ JSON با فیلد reply برگرداند. کلید محرمانه باید فقط روی سرور نگهداری شود.</p>
+</section>
+
+<section class="panel" id="subscriptionPanel">
+  <h2>اشتراک ویژهٔ آریامهر</h2>
+  <div style="border:1px solid var(--line);border-radius:14px;padding:14px;background:#f8fcfd">
+    <p style="margin:0 0 4px;font-size:.9rem;color:var(--muted)">طرح ماهانه</p>
+    <div style="font-size:1.55rem;font-weight:bold;color:var(--brand)">۱٬۰۰۰٬۰۰۰ تومان</div>
+    <p style="margin:4px 0 12px">مدت اشتراک: یک ماه</p>
+    <label for="paymentEndpoint">نشانی امن سرور ساخت پرداخت (HTTPS)</label>
+    <input id="paymentEndpoint" type="url" placeholder="https://your-server.example/api/create-checkout" autocomplete="url">
+    <div class="actions"><button id="savePaymentSettings" type="button" class="secondary">ذخیرهٔ نشانی پرداخت</button></div>
+    <button id="startPayment" type="button" style="width:100%">پرداخت اینترنتی</button>
+    <p id="paymentStatus" class="small" role="status" style="margin-bottom:0">وضعیت: درگاه بانکی هنوز متصل نشده است.</p>
+  </div>
+  <div class="notice" style="margin-top:12px">
+    <b>مهم دربارهٔ پرداخت:</b>
+    این نسخه تا زمانی که سرور امن و درگاه معتبر راه‌اندازی و آزمایش نشوند، هیچ پولی دریافت نمی‌کند. برای دریافت واقعی پول باید درگاه معتبر و سرور امن برای تأیید تراکنش و فعال‌سازی اشتراک راه‌اندازی شود.
+    سرور باید مبلغ را خودش تعیین کند و تراکنش را با API رسمی درگاه تأیید کند؛ بازگشت کاربر به برنامه به‌تنهایی اثبات پرداخت نیست.
+    اطلاعات کارت بانکی یا رمز را داخل این فایل وارد نکن.
+  </div>
+</section>
+
+<section class="panel notice"><b>دربارهٔ نسخهٔ آفلاین:</b> این نسخه پاسخ‌های روزمره و تشخیص عبارت‌های فارسی بیشتری دارد، عددهای فارسی را برای محاسبات ساده می‌خواند و از آموزش‌های ذخیره‌شده استفاده می‌کند. هنوز آفلاین است و به مدل بزرگ هوش مصنوعی متصل نیست؛ بنابراین ممکن است پاسخ بعضی سؤال‌ها را نداند.</section>
+<footer>آریامهر نسخهٔ ۲۹ · حافظهٔ گفتگو و واژه‌ها · آماده‌سازی اتصال امن</footer>
+</main>
+<script>
+(function(){
+"use strict";
+const $=id=>document.getElementById(id);
+const KEY="ariamehr_v21_data";
+let data={name:"",qa:[],words:[],history:[]};
+function load(){try{const x=JSON.parse(localStorage.getItem(KEY)||localStorage.getItem("ariamehr_v20_data")||"{}");data={name:typeof x.name==="string"?x.name:"",qa:Array.isArray(x.qa)?x.qa:[],words:Array.isArray(x.words)?x.words:[],history:Array.isArray(x.history)?x.history:[]};}catch(e){data={name:"",qa:[],words:[],history:[]};}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(data));}catch(e){alert("ذخیره‌سازی مرورگر در دسترس نیست. از پشتیبان‌گیری استفاده کن.");}updateMemory();}
+function updateMemory(){$("memoryInfo").textContent="نام ذخیره‌شده: "+(data.name||"هنوز ثبت نشده")+" · تعداد آموزش‌ها: "+data.qa.length+" · کلمه‌های ذخیره‌شده: "+(data.words||[]).length+" · پیام‌های ذخیره‌شده: "+data.history.length;}
+function addMsg(who,text,remember=true){const div=document.createElement("div");div.className="msg "+who;const meta=document.createElement("div");meta.className="meta";meta.textContent=who==="user"?"تو":"آریامهر";const body=document.createElement("div");body.textContent=text;div.append(meta,body);$("chat").appendChild(div);$("chat").scrollTop=$("chat").scrollHeight;if(remember){data.history.push({who,text,at:Date.now()});if(data.history.length>80)data.history=data.history.slice(-80);save();}}
+ function norm(s){
+  return String(s).toLowerCase()
+   .replace(/[يى]/g,"ی").replace(/ك/g,"ک").replace(/[ۀة]/g,"ه")
+   .replace(/[۰-۹]/g,d=>"۰۱۲۳۴۵۶۷۸۹".indexOf(d))
+   .replace(/[ًٌٍَُِّْـ]/g,"").replace(/[؟?!.,،؛:؛،]/g," ")
+   .replace(/[\u200c\u200f\u200e]/g," ").replace(/\s+/g," ").trim();
+ }
+ function answer(raw){
+  const t=norm(raw);
+  // Handle direct requests to define a word from the saved local vocabulary.
+  const knownWords = Array.isArray(data.words) ? data.words : [];
+  const meaningAsk = t.match(/^(?:معنی|معنا)(?: کلمه)? (.+?)(?: چیه| چیست| یعنی چی| یعنی چه)?$/);
+  if(meaningAsk){
+   const target=norm(meaningAsk[1]);
+   const found=knownWords.find(w=>norm(w.word)===target);
+   if(found) return "معنی «"+found.word+"» اینه: "+found.meaning+(found.example?"\nمثال: "+found.example:"")+"\nاین کلمه در حافظهٔ محلی من ذخیره شده. 😊";
+   return "هنوز معنی این کلمه رو در حافظه‌ام ذخیره نکردم. از بخش «یاد دادن کلمه و ذخیرهٔ معنی» کلمه و معنی‌اش رو وارد کن. 😊";
+  }
+  const teachMatch = raw.match(/(?:یاد بگیر|یاد بگیر که|کلمه)\s*[«\"']?([^»\"'،:؛]+?)[»\"']?\s*(?:یعنی|به معنی|معنی‌اش این است)\s*([^.!؟]+)/);
+  if(teachMatch){
+   const word=teachMatch[1].trim(), meaning=teachMatch[2].trim();
+   if(word && meaning){
+    const idx=knownWords.findIndex(w=>norm(w.word)===norm(word));
+    const item={word,meaning,example:""};
+    if(idx>=0) knownWords[idx]=item; else knownWords.push(item);
+    data.words=knownWords;save();
+    return "یاد گرفتم: «"+word+"» یعنی "+meaning+". این مورد در حافظهٔ همین مرورگر ذخیره شد. 😊";
+   }
+  }
+  const directWord=knownWords.find(w=>norm(w.word)===t);
+  if(directWord) return "«"+directWord.word+"» یعنی "+directWord.meaning+(directWord.example?"\nمثال: "+directWord.example:"")+" 😊";
+  const nameMatch=raw.match(/(?:اسم\s*من|اسمم|نامم|منو صدا کن|من را صدا کن)\s*[:：]?\s*([آ-یA-Za-z‌-]{2,24})\s*(?:است|هستم|هست|صدا کن)?[.!؟،]*/);
+  if(nameMatch && !/(چی|چیه|چه|کیه|بود)/.test(t)){
+   data.name=nameMatch[1].replace(/[.،!؟]+$/g,"").trim();save();
+   return "چه خوب، "+data.name+"! 😊 اسمت رو به خاطر سپردم. هر وقت بپرسی «اسم من چیه؟» بهت می‌گم.";
+  }
+  if(/^(سلام|سلام سلام|درود|سلام علیکم|صبح بخیر|عصر بخیر|شب بخیر|صبحت بخیر|وقت بخیر)$/.test(t) || /سلام|درود|صبح بخیر|عصر بخیر|شب بخیر/.test(t))
+   return (data.name?"سلام "+data.name+" جان! ":"سلام! ")+"😊 خوش اومدی. امروز دوست داری دربارهٔ چی حرف بزنیم؟";
+  if(/اسمم چیه|اسم من چیه|نام من چیست|من کی هستم|اسم من چی بود|اسممو یادت/.test(t))
+   return data.name?"اسم تو "+data.name+" است 😊 یادمه که بهم گفته بودی.":"هنوز اسمت رو بهم نگفتی. بنویس «اسم من مهراد است» تا یادم بمونه.";
+  if(/چه خبر|چطوری|چطوریی|حالت چطوره|خوبی|خوب هستی|تو خوبی/.test(t))
+   return "ممنون که پرسیدی! 😊 من آماده‌ام باهات گپ بزنم. تو چطوری؟ امروز چه خبر؟";
+  if(/اسم تو چیه|نام تو چیست|تو کی هستی|خودتو معرفی کن/.test(t))
+   return "من آریامهرم 🤖 یه دستیار فارسی دوستانه‌ام. این نسخه آفلاینه؛ می‌تونم گفت‌وگوی ساده انجام بدم و چیزهایی رو که بهم آموزش می‌دی ذخیره کنم.";
+  if(/کی ساختت|کی تو را ساخته|سازنده تو کیه|تو را کی ساخته/.test(t))
+   return "من آریامهر نسخهٔ ۲۸ هستم؛ یک دستیار فارسی که در این فایل HTML اجرا می‌شم. این نسخه به‌تنهایی به مدل آنلاین وصل نیست.";
+  if(/چه کارهایی بلدی|چی بلدی|چه می توانی|چه کار میکنی|چه کمکی میکنی/.test(t))
+   return "می‌تونم گپ دوستانه بزنم، اسم ذخیره‌شده‌ات رو یادم نگه دارم، به بعضی سؤال‌های ساده جواب بدم و از بخش «آموزش سؤال و جواب» پاسخ‌های جدید یاد بگیرم. چون آفلاینم، جواب همهٔ سؤال‌ها رو خودکار نمی‌دونم.";
+  if(/ممنون|مرسی|متشکرم|دمت گرم|خیلی لطف کردی|سپاس/.test(t))
+   return "خواهش می‌کنم! 😊 خوشحالم که تونستم کمک کنم. هر وقت خواستی ادامه می‌دیم.";
+  if(/خداحافظ|فعلا|فعلاً|بای|شب بخیر/.test(t))
+   return "فعلاً! 👋 مراقب خودت باش. هر وقت برگشتی می‌تونیم از همین‌جا ادامه بدیم.";
+  if(/حوصله ندارم|حوصلم سر رفته|بی حوصله ام|کسل شدم/.test(t))
+   return "بیا یه کاری کنیم 😊 دوست داری معما حل کنیم، بازی کلمه‌ای انجام بدیم، یا دربارهٔ چیزی که دوست داری حرف بزنیم؟";
+  if(/ناراحتم|غمگینم|حالم بده|دلم گرفته|روز بدی داشتم|اعصابم خورده/.test(t))
+   return "متأسفم که روزت سخت می‌گذره 💙 اگه دوست داری، بگو چی شده؛ با دقت می‌خونم و سعی می‌کنم کمک کنم. صحبت با یک آدم قابل اعتماد هم می‌تونه مفید باشه.";
+  if(/خوشحالم|خیلی خوشحالم|امروز خوبم|عالی ام|عالی‌ام/.test(t))
+   return "چه خوب! 😊 خوشحالم که حالت خوبه. چی باعث شد امروز خوشحال باشی؟";
+  if(/دوستت دارم|تورو دوست دارم/.test(t))
+   return "چه حرف مهربونی! 😊 من هوش مصنوعی‌ام، ولی می‌تونم دوستانه و با احترام باهات حرف بزنم.";
+  if(/چند سالته|سن تو|سن انسان/.test(t))
+   return "من سن انسانی ندارم؛ یک برنامهٔ هوش مصنوعی‌ام که برای گفت‌وگو ساخته شده.";
+  if(/معما/.test(t)) return "یه معما برات دارم 🤔 چی دندونه داره ولی غذا نمی‌خوره؟ حدست چیه؟";
+  if(/جواب معما|شانه/.test(t)) return "آفرین! جواب معما «شانه» است؛ دندونه داره اما غذا نمی‌خوره 😊";
+  if(/اسم من|نام من/.test(t) && /(چی|چیه|چه|یادت|میدونی|می دونی)/.test(t))
+   return data.name?"اسم تو "+data.name+" است 😊":"هنوز اسمت رو نمی‌دونم؛ بنویس «اسم من مهراد است».";
+  if(/جمع|حاصل|حساب کن|چند می شود|چند میشه|ضرب|تقسیم|منهای|تفریق/.test(t)){
+   const digits=raw.replace(/[۰-۹]/g,d=>"۰۱۲۳۴۵۶۷۸۹".indexOf(d));
+   const nums=digits.match(/-?\d+(?:\.\d+)?/g);
+   if(nums&&nums.length>=2){const a=Number(nums[0]),b=Number(nums[1]);
+    if(/ضرب|×|\*/.test(t))return "حاصل "+a+" × "+b+" می‌شه "+(a*b)+".";
+    if(/تقسیم|÷|بر/.test(t))return b===0?"تقسیم بر صفر تعریف نشده است.":"حاصل "+a+" تقسیم بر "+b+" می‌شه "+(a/b)+".";
+    if(/منها|تفریق/.test(t))return "حاصل "+a+" منهای "+b+" می‌شه "+(a-b)+".";
+    return "حاصل "+a+" + "+b+" می‌شه "+(a+b)+".";
+   }
+  }
+  if(/کلاس هفتم|هفتمی هستم|پایه هفتم/.test(t))return "خیلی خوب! 😊 می‌تونم برای تمرین فارسی، ریاضی، علوم و درس‌های دیگه کمکت کنم. سؤال رو بفرست تا با هم بررسی کنیم.";
+  if(/مدرسه|تکلیف|مشق|امتحان/.test(t))return "حتماً، با هم قدم‌به‌قدم بررسیش می‌کنیم 😊 متن سؤال یا عکسش رو بفرست و بگو مربوط به کدوم درسه.";
+  if(/علوم|آزمایش|تجربه علمی/.test(t))return "اسم آزمایش یا سؤال علوم رو دقیق بنویس تا راهنمایی‌ات کنم. آزمایش‌های خطرناک رو فقط با کمک بزرگ‌تر و طبق دستور معلم انجام بده.";
+  if(/ریاضی|معادله|کسر|محیط|مساحت/.test(t))return "سؤال ریاضی‌ات رو کامل بنویس تا مرحله‌به‌مرحله حلش کنیم؛ اول صورت سؤال رو می‌خونیم و بعد راه‌حل رو پیدا می‌کنیم.";
+  if(/انگلیسی|زبان انگلیسی|ترجمه/.test(t))return "کلمه یا جملهٔ انگلیسی رو بفرست تا معنی و روش استفاده‌اش رو توضیح بدم.";
+  if(/فارسی|شعر|معنی بیت|آرایه|املاء|املا/.test(t))return "متن شعر یا سؤال فارسی رو بفرست تا معنی یا جوابش رو ساده و مرحله‌به‌مرحله بررسی کنیم.";
+  for(const item of data.qa){if(norm(item.q)===t)return item.a;}
+  const near=data.qa.find(item=>{const q=norm(item.q);return q.length>3&&(t.includes(q)||q.includes(t));});if(near)return near.a;
+  const suggestions=["می‌تونی سؤال رو کمی واضح‌تر بپرسی؟","اگر دربارهٔ درس خاصی می‌پرسی، اسم درس و متن سؤال رو بفرست.","اگر جواب مشخصی مدنظرت هست، می‌تونی از بخش «آموزش سؤال و جواب جدید» بهم یاد بدی."];
+  return "می‌خوام درست کمکت کنم 😊 ولی برای این پیام جواب مطمئنی توی اطلاعات آفلاینم ندارم. "+suggestions[0]+" این نسخه هنوز به هوش مصنوعی آنلاین متصل نیست.";
+ }
+async function send(){
+ const input=$("message"),v=input.value.trim();if(!v)return;
+ addMsg("user",v);input.value="";
+ const endpoint=(localStorage.getItem("ariamehr_ai_endpoint")||"").trim();
+ if(endpoint){
+  const status=$("aiStatus");status.textContent="وضعیت: در حال دریافت پاسخ از سرور…";
+  try{
+   if(new URL(endpoint).protocol!=="https:") throw new Error("HTTPS لازم است.");
+   const res=await fetch(endpoint,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message:v,history:data.history.slice(-20),userName:data.name||""})});
+   if(!res.ok) throw new Error("HTTP "+res.status);
+   const result=await res.json();
+   if(typeof result.reply!=="string"||!result.reply.trim()) throw new Error("پاسخ سرور معتبر نیست.");
+   addMsg("bot",result.reply);status.textContent="وضعیت: پاسخ آنلاین دریافت شد.";return;
+  }catch(err){status.textContent="وضعیت: اتصال آنلاین ناموفق بود؛ پاسخ آفلاین نمایش داده می‌شود.";}
+ }
+ addMsg("bot",answer(v));
+}
+
+
+$("saveWord").addEventListener("click",()=>{
+ const word=$("word").value.trim(),meaning=$("meaning").value.trim(),example=$("example").value.trim();
+ if(!word||!meaning){alert("لطفاً کلمه و معنی آن را وارد کن.");return;}
+ if(!Array.isArray(data.words))data.words=[];
+ const i=data.words.findIndex(w=>norm(w.word)===norm(word));
+ const item={word,meaning,example};
+ if(i>=0)data.words[i]=item;else data.words.push(item);
+ save();$("word").value="";$("meaning").value="";$("example").value="";
+ $("wordList").textContent="کلمهٔ «"+word+"» ذخیره شد. حالا در گفت‌وگو بپرس: «معنی "+word+" چیه؟»";
+});
+$("showWords").addEventListener("click",()=>{
+ const box=$("wordList");box.replaceChildren();
+ if(!Array.isArray(data.words)||!data.words.length){box.textContent="هنوز کلمه‌ای ذخیره نشده؛ کلمه و معنی‌اش را بالا وارد کن.";return;}
+ data.words.forEach((w,i)=>{
+  const d=document.createElement("div");d.style.cssText="padding:8px;border-top:1px solid #dbe7ed;margin-top:6px";
+  const b=document.createElement("b");b.textContent=(i+1)+". "+w.word+" — "+w.meaning;
+  const p=document.createElement("p");p.textContent=w.example?"مثال: "+w.example:"";p.style.margin="3px 0";
+  const del=document.createElement("button");del.className="secondary";del.textContent="حذف";
+  del.addEventListener("click",()=>{data.words.splice(i,1);save();$("showWords").click();});
+  d.append(b,p,del);box.appendChild(d);
+ });
+});
+let activeQuizWord=null;
+function startWordQuiz(){
+ if(!Array.isArray(data.words)||!data.words.length){$("wordList").textContent="اول حداقل یک کلمه و معنی‌اش را ذخیره کن.";return;}
+ activeQuizWord=data.words[Math.floor(Math.random()*data.words.length)];
+ $("quizArea").style.display="block";
+ $("quizQuestion").textContent="آزمون: معنی «"+activeQuizWord.word+"» چیست؟";
+ $("quizAnswer").value="";$("quizFeedback").textContent="";$("quizAnswer").focus();
+}
+$("quizWord").addEventListener("click",startWordQuiz);
+$("nextQuiz").addEventListener("click",startWordQuiz);
+$("checkQuiz").addEventListener("click",()=>{
+ if(!activeQuizWord){startWordQuiz();return;}
+ const answerText=norm($("quizAnswer").value);
+ if(!answerText){$("quizFeedback").textContent="اول جواب را بنویس.";return;}
+ const expected=norm(activeQuizWord.meaning);
+ const words=expected.split(" ").filter(x=>x.length>2);
+ const matched=words.filter(x=>answerText.includes(x)).length;
+ const close=answerText===expected || (words.length>0 && matched/words.length>=0.5);
+ if(close){
+   $("quizFeedback").textContent="آفرین! جواب تو با معنی ذخیره‌شده جور درمی‌آید. 🎉";
+ }else{
+   $("quizFeedback").textContent="هنوز دقیق نیست. معنی ذخیره‌شده: "+activeQuizWord.meaning;
+ }
+});
+
+function loadEndpointSettings(){
+ $("aiEndpoint").value=localStorage.getItem("ariamehr_ai_endpoint")||"";
+ $("paymentEndpoint").value=localStorage.getItem("ariamehr_payment_endpoint")||"";
+}
+$("saveAiSettings").addEventListener("click",()=>{
+ const endpoint=$("aiEndpoint").value.trim();
+ if(endpoint && !/^https:\/\//i.test(endpoint)){alert("نشانی سرور باید با https:// شروع شود.");return;}
+ localStorage.setItem("ariamehr_ai_endpoint",endpoint);
+ $("aiStatus").textContent=endpoint?"نشانی ذخیره شد؛ اتصال واقعی پس از راه‌اندازی سرور ممکن می‌شود.":"نشانی اتصال پاک شد؛ پاسخ‌ها آفلاین خواهند بود.";
+});
+$("testAiConnection").addEventListener("click",async()=>{
+ const endpoint=$("aiEndpoint").value.trim();
+ if(!endpoint){$("aiStatus").textContent="ابتدا نشانی API سرور را وارد کن.";return;}
+ try{
+  if(new URL(endpoint).protocol!=="https:") throw new Error();
+  $("aiStatus").textContent="در حال آزمون سرور…";
+  const res=await fetch(endpoint,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message:"فقط پاسخ بده: اتصال برقرار است.",history:[],userName:data.name||""})});
+  const result=await res.json();
+  if(!res.ok||typeof result.reply!=="string") throw new Error();
+  $("aiStatus").textContent="اتصال موفق است؛ سرور پاسخ داد.";
+ }catch(e){$("aiStatus").textContent="آزمون ناموفق بود. آدرس، سرور و تنظیمات CORS را بررسی کن.";}
+});
+$("savePaymentSettings").addEventListener("click",()=>{
+ const endpoint=$("paymentEndpoint").value.trim();
+ if(endpoint && !/^https:\/\//i.test(endpoint)){alert("نشانی سرور باید با https:// شروع شود.");return;}
+ localStorage.setItem("ariamehr_payment_endpoint",endpoint);
+ $("paymentStatus").textContent=endpoint?"نشانی سرور ذخیره شد؛ پرداخت تا زمان راه‌اندازی درگاه فعال نیست.":"درگاه هنوز تنظیم نشده است.";
+});
+$("startPayment").addEventListener("click",async()=>{
+ const endpoint=(localStorage.getItem("ariamehr_payment_endpoint")||"").trim();
+ if(!endpoint){$("paymentStatus").textContent="پرداخت انجام نشد؛ ابتدا سرور امن و درگاه معتبر باید راه‌اندازی شوند.";alert("درگاه بانکی هنوز متصل نیست؛ هیچ پولی دریافت نمی‌شود.");return;}
+ try{
+  if(new URL(endpoint).protocol!=="https:") throw new Error();
+  $("paymentStatus").textContent="در حال درخواست ساخت تراکنش از سرور امن…";
+  const res=await fetch(endpoint,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({plan:"monthly_premium"})});
+  const result=await res.json();
+  if(!res.ok||typeof result.checkoutUrl!=="string"||!/^https:\/\//i.test(result.checkoutUrl)) throw new Error();
+  window.location.href=result.checkoutUrl;
+ }catch(e){$("paymentStatus").textContent="پرداخت آغاز نشد؛ سرور/درگاه واقعی یا تنظیمات آن آماده نیست.";alert("ساخت تراکنش ناموفق بود. پرداختی انجام نشده است.");}
+});
+
+$("send").addEventListener("click",send);$("message").addEventListener("keydown",e=>{if(e.key==="Enter")send();});
+$("saveQA").addEventListener("click",()=>{const q=$("q").value.trim(),a=$("a").value.trim();if(!q||!a){alert("لطفاً هم سؤال و هم پاسخ را بنویس.");return;}const i=data.qa.findIndex(x=>norm(x.q)===norm(q));if(i>=0)data.qa[i]={q,a};else data.qa.push({q,a});save();$("q").value="";$("a").value="";alert("آموزش ذخیره شد!");});
+$("showQA").addEventListener("click",()=>{const box=$("qaList");box.replaceChildren();if(!data.qa.length){box.textContent="هنوز آموزشی ذخیره نشده است.";return;}data.qa.forEach((x,i)=>{const d=document.createElement("div");d.style.cssText="padding:8px;border-top:1px solid #dbe7ed;margin-top:6px";const b=document.createElement("b");b.textContent=(i+1)+". "+x.q;const p=document.createElement("p");p.textContent=x.a;p.style.margin="3px 0";const del=document.createElement("button");del.className="secondary";del.textContent="حذف";del.addEventListener("click",()=>{data.qa.splice(i,1);save();$("showQA").click();});d.append(b,p,del);box.appendChild(d);});});
+$("clearChat").addEventListener("click",()=>{$("chat").replaceChildren();data.history=[];save();addMsg("bot","گفت‌وگوی تازه شروع شد! 😊",false);});
+$("forgetName").addEventListener("click",()=>{data.name="";save();alert("نام ذخیره‌شده پاک شد.");});
+$("resetAll").addEventListener("click",()=>{if(confirm("همهٔ نام، آموزش‌ها و حافظهٔ ذخیره‌شده پاک شود؟")){data={name:"",qa:[],words:[],history:[]};save();$("chat").replaceChildren();addMsg("bot","حافظه پاک شد. از نو شروع کنیم؟",false);$("qaList").replaceChildren();}});
+$("exportData").addEventListener("click",()=>{const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="Ariamehr_v26_backup.json";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);});
+$("importData").addEventListener("change",async e=>{const f=e.target.files[0];if(!f)return;try{const x=JSON.parse(await f.text());if(!x||!Array.isArray(x.qa))throw new Error();data={name:typeof x.name==="string"?x.name:"",qa:x.qa.filter(q=>q&&typeof q.q==="string"&&typeof q.a==="string"),words:Array.isArray(x.words)?x.words.filter(w=>w&&typeof w.word==="string"&&typeof w.meaning==="string"):[],history:Array.isArray(x.history)?x.history:[]};save();alert("پشتیبان بازیابی شد.");}catch(err){alert("این فایل پشتیبان معتبر نیست.");}e.target.value="";});
+load();updateMemory();loadEndpointSettings();
+if(Array.isArray(data.history) && data.history.length){
+  data.history.forEach(m=>{if(m && (m.who==="user"||m.who==="bot") && typeof m.text==="string")addMsg(m.who,m.text,false);});
+  addMsg("bot","گفت‌وگوی قبلی از حافظهٔ همین مرورگر بازیابی شد. 😊",false);
+}else{
+  addMsg("bot","سلام"+(data.name?" "+data.name:"")+"! من آریامهر نسخهٔ ۲۸ هستم و بدون اینترنت کار می‌کنم. 😊 می‌توانی گفتگو کنی، کلمه یاد بدهی و آزمون بدهی.",false);
+}
+})();
+</script>
+</body>
+</html>
